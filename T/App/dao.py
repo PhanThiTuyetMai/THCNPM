@@ -6,11 +6,14 @@ def load_categories():
     return Category.query.all()
 
 
-def load_products(kw=None):
+def load_products(kw, cate_id):
     products = Product.query
 
     if kw:
         products = products.filter(Product.name.contains(kw))
+
+    if cate_id:
+        products = products.filter(Product.category_id.__eq__(cate_id))
 
     return products.all()
 
@@ -19,7 +22,7 @@ def get_user_by_id(user_id):
     return User.query.get(user_id)
 
 
-def check_login(username, password):
+def auth_user(username, password):
     if username and password:
         password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 

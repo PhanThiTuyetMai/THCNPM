@@ -8,8 +8,9 @@ from flask_login import login_user
 @App.route('/')
 def index():
     kw = request.args.get('kw')
+    cate_id = request.args.get('cate_id')
     categories = dao.load_categories()
-    products = dao.load_products(kw)
+    products = dao.load_products(kw, cate_id)
     return render_template('index.html', categories=categories, products=products)
 
 
@@ -17,7 +18,8 @@ def index():
 def admin_login():
     username = request.form.get('username')
     password = request.form.get('password')
-    user = dao.check_login(username=username, password=password)
+
+    user = dao.auth_user(username=username, password=password)
     if user:
         login_user(user=user)
 
@@ -25,7 +27,7 @@ def admin_login():
 
 
 @login.user_loader
-def load_user(user_id):
+def get_user(user_id):
     return dao.get_user_by_id(user_id=user_id)
 
 
