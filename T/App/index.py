@@ -1,6 +1,6 @@
 import math
 
-from flask import render_template, request, redirect  # chuyen trang
+from flask import render_template, request, redirect, jsonify, session  # chuyen trang
 import dao
 from App import App, login
 from flask_login import login_user
@@ -18,7 +18,7 @@ def index():
 
     num = dao.count_product()
     return render_template('index.html', categories=categories, products=products,
-                           pages=math.ceil(num/App.config['PAGE_SIZE']))
+                           pages=math.ceil(num / App.config['PAGE_SIZE']))
 
 
 @App.route('/admin/login', methods=['post'])
@@ -31,6 +31,36 @@ def admin_login():
         login_user(user=user)
 
     return redirect('/admin')
+
+
+@App.route("/api/cart", methods=['post'])
+def add_to_cart():
+
+    data = request.json
+
+
+    cart = session.get('cart')
+    if cart is None:
+        cart = {}
+
+    id = str(data.get("id"))
+    if id in cart:
+        cart[id]['quantity'] += 1
+    else:
+        cart[id] = {
+            "id": id,
+            "name": data.get("name"),
+            "price": data.get("price"),
+            "quantity": 1
+        }
+
+    session['cart'] = cart
+    print(cart)
+
+    return jsonify({
+        "total_amount": 100,
+        "total_quantity": 100
+    })
 
 
 @login.user_loader
