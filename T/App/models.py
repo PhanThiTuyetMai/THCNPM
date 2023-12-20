@@ -47,7 +47,7 @@ class Product(db.Model):
 
 if __name__ == '__main__':
     with App.app_context():
-        db.create_all()
+        # db.create_all()
 
         import hashlib
 
